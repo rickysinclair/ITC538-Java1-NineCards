@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_ninecards" default="compile.module.ninecards">
+  <dirname property="module.ninecards.basedir" file="${ant.file.module_ninecards}"/>
+  
+  <property name="module.jdk.home.ninecards" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.ninecards" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.ninecards" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.ninecards" value="-encoding UTF-8 -source 11 -target 11 ${compiler.args}"/>
+  
+  <property name="ninecards.output.dir" value="${module.ninecards.basedir}/out/production/NineCards"/>
+  <property name="ninecards.testoutput.dir" value="${module.ninecards.basedir}/out/test/NineCards"/>
+  
+  <path id="ninecards.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="ninecards.module.production.classpath">
+    <path refid="${module.jdk.classpath.ninecards}"/>
+    <path refid="library.javafx-11.classpath"/>
+  </path>
+  
+  <path id="ninecards.runtime.production.module.classpath">
+    <pathelement location="${ninecards.output.dir}"/>
+    <path refid="library.javafx-11.classpath"/>
+  </path>
+  
+  <path id="ninecards.module.classpath">
+    <path refid="${module.jdk.classpath.ninecards}"/>
+    <pathelement location="${ninecards.output.dir}"/>
+    <path refid="library.javafx-11.classpath"/>
+  </path>
+  
+  <path id="ninecards.runtime.module.classpath">
+    <pathelement location="${ninecards.testoutput.dir}"/>
+    <pathelement location="${ninecards.output.dir}"/>
+    <path refid="library.javafx-11.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.ninecards">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.ninecards">
+    <patternset refid="excluded.from.module.ninecards"/>
+  </patternset>
+  
+  <path id="ninecards.module.sourcepath">
+    <dirset dir="${module.ninecards.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.ninecards" depends="compile.module.ninecards.production,compile.module.ninecards.tests" description="Compile module NineCards"/>
+  
+  <target name="compile.module.ninecards.production" depends="register.custom.compilers" description="Compile module NineCards; production classes">
+    <mkdir dir="${ninecards.output.dir}"/>
+    <javac2 destdir="${ninecards.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.ninecards}/javac">
+      <compilerarg line="${compiler.args.ninecards}"/>
+      <bootclasspath refid="ninecards.module.bootclasspath"/>
+      <classpath refid="ninecards.module.production.classpath"/>
+      <src refid="ninecards.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.ninecards"/>
+    </javac2>
+    
+    <copy todir="${ninecards.output.dir}">
+      <fileset dir="${module.ninecards.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.ninecards.tests" depends="register.custom.compilers,compile.module.ninecards.production" description="compile module NineCards; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.ninecards" description="cleanup module">
+    <delete dir="${ninecards.output.dir}"/>
+    <delete dir="${ninecards.testoutput.dir}"/>
+  </target>
+</project>
